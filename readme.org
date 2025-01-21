@@ -5,7 +5,7 @@
 #Author: Wcq
 #Email: wcq-062821@163.com
 #Created: 2025-01-21 14:28:23 
-#Last Update: 2025-01-21 14:31:44
+#Last Update: 2025-01-21 15:08:31
 #         By: Wcq
 #Description: 
 #********************************************************************************
@@ -29,9 +29,6 @@ git init
 ** Generate `compile_commands.json`
 Open a terminal and run the following command:
 #+BEGIN_SRC sh
-python gen_compile_command_json.py
+python gen_compile_commands_json.py
 #+END_SRC
 Windows users can open cmd or PowerShell to run the command, or simply double-click the script to execute it. However, running it via double-click will not display debug information.
-``` 
-
-This is the English version of your `readme.org`. Let me know if you need further adjustments!

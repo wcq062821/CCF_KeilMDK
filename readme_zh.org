@@ -5,7 +5,7 @@
 #Author: Wcq
 #Email: wcq-062821@163.com
 #Created: 2025-01-21 14:14:08 
-#Last Update: 2025-01-21 14:26:22
+#Last Update: 2025-01-21 15:08:45
 #         By: Wcq
 #Description: 
 #********************************************************************************
@@ -27,7 +27,7 @@ git init
 ** 生成 compile_commands.json 
 把开终端运行以下命令:
 #+BEGIN_SRC sh
-python gen_compile_command_json.py
+python gen_compile_commands_json.py
 #+END_SRC
 windows 用户可以打开 cmd 或者 powershell 运行, 或者双击运行也可以, 只不过双击运行看不到调试信息
 
