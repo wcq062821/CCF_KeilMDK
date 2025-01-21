@@ -5,7 +5,7 @@
 #Author: Wcq
 #Email: wcq-062821@163.com
 #Created: 2020-09-07 16:10:54
-#Last Update: 2025-01-21 14:13:39
+#Last Update: 2025-01-21 15:03:20
 #         By: Wcq
 #Description:
 # Usage: Call this script in any directory of the git project to generate `compile_commands.json` under the root directory of the git repository.
@@ -148,7 +148,13 @@ def generate_compile_commands_by_depfile(dep_file, outfile, path_type='/'):
                             fpw.write('   "-I')
                             header = True
                         else:
-                            fpw.write('   "-I%s",\n'%os.path.abspath(arg[2:]).replace('\\', path_type))
+                            include_path = arg[2:]
+                            abs_include_path = os.path.abspath(include_path).replace('\\', path_type)
+                            if not os.path.exists(abs_include_path):
+                                abs_include_path = include_path
+                            abs_include_path = abs_include_path.replace('\\', path_type)
+
+                            fpw.write('   "-I%s",\n'%abs_include_path)
                     elif (arg == '-o') or (arg == '-c') or (arg.endswith('.o')):
                         fpw.write('   "%s",\n'%arg)
 
