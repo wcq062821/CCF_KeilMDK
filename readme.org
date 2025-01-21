@@ -1,0 +1,37 @@
+#+BEGIN_COMMENT
+#********************************************************************************
+#Copyright © 2025 Wcq
+#File Name: readme_en.org
+#Author: Wcq
+#Email: wcq-062821@163.com
+#Created: 2025-01-21 14:28:23 
+#Last Update: 2025-01-21 14:31:44
+#         By: Wcq
+#Description: 
+#********************************************************************************
+#+END_COMMENT
+[[file:readme_zh.org][中文]]
+* Introduction
+** For ARM Projects
+This tool parses the .dep file of a Keil MDK project to extract the compilation commands used in the project, which are then used to generate a `compile_commands.json` file.
+The generated `compile_commands.json` can be used with clangd or ccls to enable LSP (Language Server Protocol) functionality in the editor.
+** For 51 Projects
+This tool parses the .uvproj file of a Keil MDK project to extract the files used in the project, which are then used to generate a `compile_commands.json` file.
+The generated `compile_commands.json` can be used with clangd or ccls to enable LSP (Language Server Protocol) functionality in the editor.
+
+* Usage
+** Ensure that Python3 is installed and added to your PATH.
+** Ensure that the current Keil MDK project is located within a git repository. If not, initialize a git repository in the project's root directory using the following command:
+#+BEGIN_SRC sh
+git init
+#+END_SRC
+👿 Note: The git directory should ideally contain both the Keil MDK project and the source code.
+** Generate `compile_commands.json`
+Open a terminal and run the following command:
+#+BEGIN_SRC sh
+python gen_compile_command_json.py
+#+END_SRC
+Windows users can open cmd or PowerShell to run the command, or simply double-click the script to execute it. However, running it via double-click will not display debug information.
+``` 
+
+This is the English version of your `readme.org`. Let me know if you need further adjustments!

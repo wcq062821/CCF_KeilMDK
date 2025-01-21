@@ -1,0 +1,36 @@
+#+BEGIN_COMMENT
+#********************************************************************************
+#Copyright © 2025 Wcq
+#File Name: readme.org
+#Author: Wcq
+#Email: wcq-062821@163.com
+#Created: 2025-01-21 14:14:08 
+#Last Update: 2025-01-21 14:26:22
+#         By: Wcq
+#Description: 
+#********************************************************************************
+#+END_COMMENT
+* 简介
+** 对于 ARM 工程
+该工具通过解析keilMDK 的 .dep 文件, 获取keilMDK 工程所用到的编译命令, 用于生成 compile_commands.json
+生成的 compile_commands.json 可以用于 clangd 或者 ccls , 在编译器上实现 LSP ( Language Server Protocl )的功能
+** 对于 51 工程
+该工具通过解析keilMDK 的 .uvproj 文件, 获取keilMDK 工程所用到文件, 用于生成 compile_commands.json
+生成的 compile_commands.json 可以用于 clangd 或者 ccls , 在编译器上实现 LSP ( Language Server Protocl )的功能
+* 用法
+** 确保已经安装 python3, 并把python 加入到 PATH
+** 确保当前的keilMDK 工程位于 git 仓库内, 如果不是, 则在工程的根目录上使用以下命令初始化
+#+BEGIN_SRC sh
+git init
+#+END_SRC
+👿注意: git 目录最好是包含keilMDK 和源码的目录
+** 生成 compile_commands.json 
+把开终端运行以下命令:
+#+BEGIN_SRC sh
+python gen_compile_command_json.py
+#+END_SRC
+windows 用户可以打开 cmd 或者 powershell 运行, 或者双击运行也可以, 只不过双击运行看不到调试信息
+
+
+
+
