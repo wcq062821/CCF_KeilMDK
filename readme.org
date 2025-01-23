@@ -5,7 +5,7 @@
 #Author: Wcq
 #Email: wcq-062821@163.com
 #Created: 2025-01-21 14:28:23 
-#Last Update: 2025-01-21 15:08:31
+#Last Update: 2025-01-23 16:21:39
 #         By: Wcq
 #Description: 
 #********************************************************************************
@@ -14,6 +14,7 @@
 * Introduction
 ** For ARM Projects
 This tool parses the .dep file of a Keil MDK project to extract the compilation commands used in the project, which are then used to generate a `compile_commands.json` file.
+Therefore, if the project has not been compiled before using this tool, it is best to first compile the project with Keil to generate the latest .dep file.
 The generated `compile_commands.json` can be used with clangd or ccls to enable LSP (Language Server Protocol) functionality in the editor.
 ** For 51 Projects
 This tool parses the .uvproj file of a Keil MDK project to extract the files used in the project, which are then used to generate a `compile_commands.json` file.
