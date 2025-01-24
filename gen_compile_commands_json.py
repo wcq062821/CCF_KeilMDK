@@ -5,7 +5,7 @@
 #Author: Wcq
 #Email: wcq-062821@163.com
 #Created: 2020-09-07 16:10:54
-#Last Update: 2025-01-21 15:03:20
+#Last Update: 2025-01-24 10:22:23
 #         By: Wcq
 #Description:
 # Usage: Call this script in any directory of the git project to generate `compile_commands.json` under the root directory of the git repository.
@@ -87,20 +87,24 @@ def generate_compile_commands_for_51(project_file, root_dir, outfile, path_type)
             outfile.write('\n]')
             print('Generated compile_commands.json successfully!')
 
-
 def generate_compile_commands_by_depfile(dep_file, outfile, path_type='/'):
     pathList = set('')
     srcList = set('')
     with open(dep_file, 'r') as fpr, open(outfile, 'w') as fpw:
         buf = fpr.read()
         fpw.write('[\n')
-        srcFile = re.findall(r'\nF \((.*?)\)\(.*?\)\((.*?)\)', buf, re.S)
+        srcFile = re.findall(r'\nF \((.*?)\)\(.*?\)\((.*?)\)\n', buf, re.S)
         if srcFile:
             curDir = os.path.abspath('..')
             curDir = curDir.replace('\\', path_type)
             firstElement = True
             for eachFile in srcFile:
                 arguments = eachFile[1].replace('\n\n', ' ')
+                result = re.findall(r'-I(.*?) -D', arguments, re.S)
+                if result:
+                    include_path_strings = result[0]
+                else:
+                    include_path_strings = ""
                 arguments = arguments.split(' ')
                 argumentsTmp = []
                 L = None
@@ -144,17 +148,16 @@ def generate_compile_commands_by_depfile(dep_file, outfile, path_type='/'):
                         fpw.write('   "-D",\n')
                         fpw.write('   "%s",\n'%arg[2:])
                     elif arg.startswith('-I'):
-                        if len(arg) == 2:
-                            fpw.write('   "-I')
-                            header = True
-                        else:
-                            include_path = arg[2:]
-                            abs_include_path = os.path.abspath(include_path).replace('\\', path_type)
-                            if not os.path.exists(abs_include_path):
-                                abs_include_path = include_path
-                            abs_include_path = abs_include_path.replace('\\', path_type)
-
-                            fpw.write('   "-I%s",\n'%abs_include_path)
+                        if include_path_strings:
+                            include_path_items =  include_path_strings.split(' -I')
+                            for include_path in include_path_items: 
+                                include_path = include_path.replace('\"', '').strip()
+                                abs_include_path = os.path.abspath(include_path).replace('\\', path_type)
+                                if not os.path.exists(abs_include_path):
+                                    abs_include_path = include_path
+                                abs_include_path = abs_include_path.replace('\\', path_type)
+                                fpw.write(f'   \"-I{include_path}\"\n')
+                            include_path_strings = ""
                     elif (arg == '-o') or (arg == '-c') or (arg.endswith('.o')):
                         fpw.write('   "%s",\n'%arg)
 
@@ -164,7 +167,7 @@ def generate_compile_commands_by_depfile(dep_file, outfile, path_type='/'):
                 fpw.write(' }')
                 firstElement = False
             fpw.write('\n]')
-            print('gen compile_command.json finish!')
+            print('gen compile_commands.json finish!')
 
 if __name__ == '__main__':
     path_type = get_platform_path_type()
