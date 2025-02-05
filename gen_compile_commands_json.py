@@ -5,7 +5,7 @@
 #Author: Wcq
 #Email: wcq-062821@163.com
 #Created: 2020-09-07 16:10:54
-#Last Update: 2025-01-24 10:22:23
+#Last Update: 2025-02-05 17:07:10
 #         By: Wcq
 #Description:
 # Usage: Call this script in any directory of the git project to generate `compile_commands.json` under the root directory of the git repository.
@@ -16,6 +16,7 @@ import platform
 import subprocess
 
 keil_c51_include_dir = "E:/Keil_C51/C51/INC"
+keil_mdk_root_dir = "C:/Keil_v5"
 outfile = 'compile_commands.json'
 
 def get_platform_path_type():
@@ -88,18 +89,35 @@ def generate_compile_commands_for_51(project_file, root_dir, outfile, path_type)
             print('Generated compile_commands.json successfully!')
 
 def generate_compile_commands_by_depfile(dep_file, outfile, path_type='/'):
-    pathList = set('')
-    srcList = set('')
+    global keil_mdk_root_dir
+    inc_path_list = set('.')
+    keil_mdk_root_dir = os.path.normpath(keil_mdk_root_dir).replace(os.path.sep, '\\')
+    mdk_inc_dir = os.path.join(keil_mdk_root_dir, 'Arm', 'ARMCLANG', 'include')
+    mdk_inc_dir = mdk_inc_dir.replace('\\', path_type)
+    inc_path_list.add(mdk_inc_dir)
+    with open(dep_file, 'r') as fpr:
+        for line in fpr.readlines():
+            result = re.findall(r'^[FI] \((.*?)\)(.*?)', line, re.S)
+            if result:
+                inc_path = os.path.abspath(result[0][0]).replace('\\', path_type)
+                inc_path_list.add(os.path.dirname(inc_path))
+                
+    inc_path_list = sorted(inc_path_list)
+    # for item in inc_path_list:
+    #     print(f'item : {item}')
+
     with open(dep_file, 'r') as fpr, open(outfile, 'w') as fpw:
         buf = fpr.read()
         fpw.write('[\n')
-        srcFile = re.findall(r'\nF \((.*?)\)\(.*?\)\((.*?)\)\n', buf, re.S)
+        srcFile = re.findall(r'\nF \((.*?)\)\(.*?\)\((.*?)\)', buf, re.S)
         if srcFile:
             curDir = os.path.abspath('..')
             curDir = curDir.replace('\\', path_type)
             firstElement = True
             for eachFile in srcFile:
                 arguments = eachFile[1].replace('\n\n', ' ')
+                if not arguments:
+                    continue
                 result = re.findall(r'-I(.*?) -D', arguments, re.S)
                 if result:
                     include_path_strings = result[0]
@@ -149,21 +167,21 @@ def generate_compile_commands_by_depfile(dep_file, outfile, path_type='/'):
                         fpw.write('   "%s",\n'%arg[2:])
                     elif arg.startswith('-I'):
                         if include_path_strings:
-                            include_path_items =  include_path_strings.split(' -I')
-                            for include_path in include_path_items: 
-                                include_path = include_path.replace('\"', '').strip()
-                                abs_include_path = os.path.abspath(include_path).replace('\\', path_type)
-                                if not os.path.exists(abs_include_path):
-                                    abs_include_path = include_path
-                                abs_include_path = abs_include_path.replace('\\', path_type)
-                                fpw.write(f'   \"-I{include_path}\"\n')
+                            for item in inc_path_list:
+                                fpw.write(f'   \"-I{item}\",\n')
+
                             include_path_strings = ""
                     elif (arg == '-o') or (arg == '-c') or (arg.endswith('.o')):
-                        fpw.write('   "%s",\n'%arg)
+                        if arg.endswith('.o'):
+                            obj_path = arg
+                            abs_obj_path = os.path.abspath(obj_path).replace('\\', path_type)
+                            fpw.write('   "%s",\n'%abs_obj_path)
+                        else:
+                            fpw.write('   "%s",\n'%arg)
 
-                fpw.write('   "%s",\n'%srcPath)
+                fpw.write('   "%s"\n'%srcPath)
                 fpw.write('  ],\n')
-                fpw.write('  "file": "%s",\n'%srcPath)
+                fpw.write('  "file": "%s"\n'%srcPath)
                 fpw.write(' }')
                 firstElement = False
             fpw.write('\n]')
